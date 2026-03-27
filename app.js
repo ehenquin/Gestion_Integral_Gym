@@ -416,15 +416,14 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser = null;
         currentRole = null;
 
-        // 2. Limpiar cache completo
-        cache = {
-            abonos: [],
-            asistencias: [],
-            actividades: [],
-            suplementos: [],
-            inscripciones: [],
-            personas: []
-        };
+        // 2. Limpiar cache completo (sin reasignar constante)
+        cache.abonos = [];
+        cache.asistencias = [];
+        cache.actividades = [];
+        cache.suplementos = [];
+        cache.inscripciones = [];
+        cache.personas = [];
+
 
         // 3. Limpiar inputs visibles del formulario
         const dInput = document.getElementById('clienteDniInput');
