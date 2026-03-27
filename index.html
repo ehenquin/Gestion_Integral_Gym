@@ -234,21 +234,19 @@
                 </div>
             </section>
 
-            <!-- ========== ASISTENCIA ========== -->
             <section id="asistenciaView" class="view hidden">
-                <div class="view-header">
-                    <h2>Registrar Asistencia</h2>
+                <div class="view-header" style="justify-content:center;">
+                    <h2 style="font-size:2.5rem; font-weight:800;">Terminal de Asistencia</h2>
                 </div>
-                <div class="card asistencia-card">
-                    <p class="section-desc">
-                        Ingresá el DNI del alumno para registrar su asistencia de hoy.
+                <div class="card asistencia-card-large">
+                    <p class="section-desc" style="text-align:center; font-size:1.4rem; margin-bottom:40px;">
+                        Ingresá tu DNI para registrar el ingreso
                     </p>
                     <form id="asistenciaForm">
                         <div class="form-group">
-                            <label for="asistenciaDni">DNI del Alumno</label>
-                            <input type="text" id="asistenciaDni" placeholder="Ej: 47001" required inputmode="numeric">
+                            <input type="text" id="asistenciaDni" class="asistencia-dni-large" placeholder="DNI"
+                                required autofocus inputmode="numeric" autocomplete="off">
                         </div>
-                        <button type="submit" class="btn-primary">Registrar</button>
                     </form>
                     <div id="asistenciaMsg" class="hidden"></div>
                 </div>
