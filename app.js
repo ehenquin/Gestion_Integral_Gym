@@ -296,7 +296,10 @@ function setupNavbar() {
     if (canAccessAdmin()) document.getElementById('btnAdmin').classList.remove('hidden');
     document.getElementById('btnNewAbono').classList.toggle('hidden', !canRegisterPago());
 
-    const nombre = currentUser.Usuario || currentUser.Mail || 'Usuario';
+    const nombre = currentUser.Nombre || currentUser.Usuario || currentUser.Mail || 'Usuario';
+    document.getElementById('userNameDisplay').textContent = nombre;
+
+
     document.getElementById('userNameDisplay').textContent = nombre;
     document.getElementById('userMailDisplay').textContent = currentUser.Mail || '';
     document.getElementById('userRoleBadge').textContent = currentRole;
@@ -416,7 +419,7 @@ function renderProfile() {
     movCard.classList.remove('hidden');
     if (asisCard) asisCard.classList.remove('hidden');
 
-    const pid = currentUser.IDAsistencia || '';
+    const pid = String(currentUser.IDCliente || currentUser.idcliente || currentUser.IDAsistencia || '');
     const misAbonos = (cache.abonos || []).filter(
         a => String(a.Persona || '').trim() === pid
     );
