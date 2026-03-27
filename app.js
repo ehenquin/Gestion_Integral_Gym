@@ -301,34 +301,62 @@ async function handleRegistrarAsistencia(e) {
     const dni = dniInput ? dniInput.value.trim() : '';
     const msgEl = document.getElementById('asistenciaMsg');
 
-    if (msgEl) msgEl.classList.add('hidden');
     if (!dni) return;
 
     await withLoader(async () => {
         // Paso 1: Validar cliente (Rápido)
         const cliente = await apiGet('loginCliente', { documento: dni });
         if (!cliente) {
-            showAsistenciaMsg(msgEl, `❌ DNI ${dni} no encontrado en Clientes.`, true);
-            msgEl.classList.remove('hidden');
+            showAsistenciaMsg(msgEl, `DNI NO ENCONTRADO`, `DNI: ${dni}`, 'res-danger');
+            startAsistenciaReset(dniInput, msgEl);
             return;
         }
 
-        // Paso 2: Registrar Asistencia (IDCliente de la nueva estructura)
+        // Paso 2: Registrar Asistencia
         await apiPost('registrarAsistencia', { IDCliente: cliente.IDCliente });
 
         // Paso 3: Feedback inmediato y verificación de deuda
-        let feedback = `✅ Bienvenido, <strong>${escHtml(cliente.Nombre)}</strong>.`;
-
-        // Calcular deuda (si las tablas de abonos están en caché)
         const saldo = getSaldoPersona(cliente.IDCliente);
+
+        let title = `BIENVENIDO, ${cliente.Nombre.split(' ')[0]}`;
+        let sub = "SIN DEUDA";
+        let cls = "res-success";
+
         if (saldo < 0) {
-            feedback += `<br><span style="color:red; font-weight:bold;">⚠️ Deuda pendiente: ${formatMonto(saldo)}</span>`;
+            title = `HOLA, ${cliente.Nombre.split(' ')[0]}`;
+            sub = `DEUDA: ${formatMonto(saldo)}`;
+            cls = "res-danger";
+        } else if (saldo > 0) {
+            sub = `A FAVOR: ${formatMonto(saldo)}`;
+            cls = "res-info";
         }
 
-        showAsistenciaMsg(msgEl, feedback, false);
-        msgEl.classList.remove('hidden');
-        dniInput.value = '';
+        showAsistenciaMsg(msgEl, title, sub, cls);
+        startAsistenciaReset(dniInput, msgEl);
     });
+}
+
+/**
+ * Muestra el mensaje gigante de asistencia.
+ */
+function showAsistenciaMsg(el, title, sub, cls) {
+    el.className = `asistencia-result-large ${cls}`;
+    el.innerHTML = `
+        <h1>${escHtml(title)}</h1>
+        <p>${escHtml(sub)}</p>
+    `;
+    el.classList.remove('hidden');
+}
+
+/**
+ * Resetea la pantalla de asistencia después de 2 segundos.
+ */
+function startAsistenciaReset(input, msg) {
+    input.value = '';
+    setTimeout(() => {
+        msg.classList.add('hidden');
+        input.focus();
+    }, 2500);
 }
 
 
