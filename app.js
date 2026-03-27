@@ -173,38 +173,42 @@ function goToLoginChoice() { showOnlyView('loginChoiceView'); }
 
 /* —— CLIENTE —— */
 async function handleLoginCliente(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const dniInput = document.getElementById('clienteDniInput');
     const dni = dniInput ? dniInput.value.trim() : '';
     const errorEl = document.getElementById('loginClienteError');
-    clearMsg(errorEl);
+    if (errorEl) errorEl.classList.add('hidden');
+
     if (!dni) {
-        showError(errorEl, 'Por favor, ingresá un DNI válido.');
+        alert("Por favor, ingresá un DNI.");
         return;
     }
+
     await withLoader(async () => {
-        // Enviamos explícitamente action=getFullDataByDocumento y el documento
-        // apiGet se encargará de inyectar la key=GYM_PRO_2026 obligatoria
-        const data = await apiGet('getFullDataByDocumento', {
-            documento: dni
-        });
+        // Petición limpia por GET (No genera CORS)
+        const data = await apiGet('getFullDataByDocumento', { documento: dni });
+
         if (!data || !data.cliente) {
-            showError(errorEl, 'DNI no encontrado. Verificá que esté registrado en el gimnasio.');
+            alert('DNI no encontrado. Verificá que estés registrado en la pestaña Clientes.');
             return;
         }
-        //await postLogin(data.cliente);
+
+        // Cargamos los datos directos del objeto retornado por el backend
         currentUser = data.cliente;
         currentRole = 'CLIENTE';
-        cache.inscripciones = data.inscripciones || [];
+
         cache.abonos = data.abonos || [];
         cache.asistencias = data.asistencias || [];
         cache.actividades = data.actividades || [];
         cache.suplementos = data.suplementos || [];
+        cache.inscripciones = data.inscripciones || [];
+
         setupNavbar();
         renderProfile();
         enterApp('perfilView');
     });
 }
+
 
 
 
