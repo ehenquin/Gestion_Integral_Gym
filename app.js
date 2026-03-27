@@ -408,14 +408,40 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('loginClienteForm').addEventListener('submit', handleLoginCliente);
     document.getElementById('loginStaffForm').addEventListener('submit', handleLoginStaff);
 
-    /* Logout */
+
+
+    /* Logout (Reparado para limpieza total) */
     document.getElementById('btnLogout').addEventListener('click', () => {
-        cache.clear(); currentUser = null; currentRole = null;
+        // 1. Limpiar sesión y roles
+        currentUser = null;
+        currentRole = null;
+
+        // 2. Limpiar cache completo
+        cache = {
+            abonos: [],
+            asistencias: [],
+            actividades: [],
+            suplementos: [],
+            inscripciones: [],
+            personas: []
+        };
+
+        // 3. Limpiar inputs visibles del formulario
+        const dInput = document.getElementById('clienteDniInput');
+        const eInput = document.getElementById('staffEmailInput');
+        if (dInput) dInput.value = '';
+        if (eInput) eInput.value = '';
+
+        // 4. Resetear UI y ocultar header
         document.getElementById('mainHeader').classList.add('hidden');
-        document.getElementById('clienteEmailInput').value = '';
-        document.getElementById('staffEmailInput').value = '';
-        goToLoginChoice();
+
+        // 5. Volver siempre a la pantalla inicial (Home / Selector)
+        enterApp('loginChoiceView');
     });
+
+
+
+
 
     /* Navegación */
     document.getElementById('btnPerfil').addEventListener('click', () => {
