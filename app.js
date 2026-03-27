@@ -298,9 +298,6 @@ function setupNavbar() {
 
     const nombre = currentUser.Nombre || currentUser.Usuario || currentUser.Mail || 'Usuario';
     document.getElementById('userNameDisplay').textContent = nombre;
-
-
-    document.getElementById('userNameDisplay').textContent = nombre;
     document.getElementById('userMailDisplay').textContent = currentUser.Mail || '';
     document.getElementById('userRoleBadge').textContent = currentRole;
     document.getElementById('userAvatar').textContent = nombre.charAt(0).toUpperCase();
@@ -525,9 +522,9 @@ function renderPersonas(lista = null) {
 
     tbody.innerHTML = data.length
         ? data.map(p => {
-            const pid = escHtml(p.IDAsistencia || '');
-            const usu = escHtml(p.Usuario || '');
-            const act = escHtml(p.Actividad || '');
+            const pid = escHtml(p.IDCliente || p.IDAsistencia || '');
+            const usu = escHtml(p.Nombre || p.Usuario || '');
+            const act = escHtml(p.Activo || p.Actividad || '');
 
             const btnConsumo = canRegisterConsumo()
                 ? `<button class="btn-item" onclick="openConsumoModal('${usu}','${pid}')">Consumo</button>`
@@ -563,12 +560,12 @@ function filterPersonas() {
     const sf = document.getElementById('saldoFilter').value;
 
     renderPersonas((cache.personas || []).filter(p => {
-        const textMatch = (p.Usuario || '').toLowerCase().includes(q) ||
+        const textMatch = (p.Nombre || p.Usuario || '').toLowerCase().includes(q) ||
             String(p.Documento || '').includes(q);
         if (!textMatch) return false;
 
         if (sf !== 'todos') {
-            const saldo = getSaldoPersona(p.IDAsistencia);
+            const saldo = getSaldoPersona(p.IDCliente || p.IDAsistencia);
             if (sf === 'deuda' && saldo >= 0) return false;
             if (sf === 'al_dia' && saldo !== 0) return false;
             if (sf === 'favor' && saldo <= 0) return false;
@@ -608,9 +605,10 @@ async function handleRegistrarAsistencia(e) {
         await apiPost('registrarAsistencia', {
             idAsistencia: 'ASI-' + Date.now(),
             documento: persona.Documento,
-            usuario: persona.Usuario
+            idCliente: persona.IDCliente || persona.IDAsistencia,
+            usuario: persona.Nombre || persona.Usuario
         });
-        showAsistenciaMsg(msgEl, `✅ Asistencia de <strong>${escHtml(persona.Usuario)}</strong> registrada.`, false);
+        showAsistenciaMsg(msgEl, `✅ Asistencia de <strong>${escHtml(persona.Nombre || persona.Usuario)}</strong> registrada.`, false);
         document.getElementById('asistenciaDni').value = '';
     });
 }
@@ -646,9 +644,9 @@ function openPagoModal() {
             <label>Persona</label>
             <select id="pagoPersonaSelect">
                 ${personas.map(p =>
-        `<option value="${escHtml(p.IDAsistencia)}"
-                             data-actividad="${escHtml(p.Actividad || '')}">
-                        ${escHtml(p.Usuario)} (DNI: ${escHtml(String(p.Documento))})
+        `<option value="${escHtml(p.IDCliente || p.IDAsistencia)}"
+                             data-actividad="${escHtml(p.Activo || p.Actividad || '')}">
+                        ${escHtml(p.Nombre || p.Usuario)} (DNI: ${escHtml(String(p.Documento))})
                     </option>`).join('')}
             </select>
         </div>
@@ -675,7 +673,7 @@ function openPagoModal() {
         await apiPost('registrarAbono', {
             idCarga: 'PAGO-' + Date.now(),
             tipoMovimiento: 'Pago',
-            idAsistencia: pid,
+            idCliente: pid,
             servicio: servId,
             suplemento: '',
             monto: monto
@@ -706,16 +704,16 @@ async function handleGenerarDeudas() {
     const sinServicio = [];
 
     for (const persona of personas) {
-        const actividad = (persona.Actividad || '').trim();
-        if (!actividad) { sinServicio.push(persona.Usuario); continue; }
+        const actividad = (persona.NombreActividad || persona.Actividad || persona.Activo || '').trim();
+        if (!actividad) continue;
 
         const servicio = servicios.find(s => norm(s.Nombre) === norm(actividad));
-        if (!servicio) { sinServicio.push(persona.Usuario); continue; }
+        if (!servicio) continue;
 
-        const idCarga = `DEUDA-${yyyymm}-${persona.IDAsistencia}-${servicio.IDServicios}`;
+        const idCarga = `DEUDA-${yyyymm}-${persona.IDCliente || persona.IDAsistencia}-${servicio.IDServicios}`;
         const yaExiste = abonos.some(a => String(a.IDCarga) === idCarga);
 
-        if (yaExiste) { omitidas.push(persona.Usuario); }
+        if (yaExiste) { omitidas.push(persona.Nombre || persona.Usuario); }
         else { pendientes.push({ persona, servicio, idCarga }); }
     }
 
@@ -740,7 +738,7 @@ async function handleGenerarDeudas() {
             await apiPost('registrarAbono', {
                 idCarga,
                 tipoMovimiento: 'Consumo',
-                idAsistencia: persona.IDAsistencia,
+                idCliente: persona.IDCliente || persona.IDAsistencia,
                 servicio: servicio.IDServicios,
                 suplemento: '',
                 monto: -Math.abs(precio)
@@ -802,15 +800,15 @@ function openNuevaPersonaModal() {
             alert(`❌ Ya existe una persona con el email ${mail}.`); return false;
         }
 
-        // Auto-generar IDAsistencia
-        const idAsistencia = generatePersonaId();
+        // Auto-generar ID
+        const idCliente = generateId();
 
         await apiPost('agregarPersona', {
-            idAsistencia, usuario, documento, mail, direccion, actividad
+            idCliente, nombre: usuario, documento, mail, direccion, activo: 'VERDADERO'
         });
 
-        // Actualizar solo cache.personas (sin recargar todo)
-        const nuevaPersona = { IDAsistencia: idAsistencia, Fecha: new Date().toISOString(), Usuario: usuario, Documento: documento, Mail: mail, Dirección: direccion, Actividad: actividad };
+        // Actualizar solo cache.personas
+        const nuevaPersona = { IDCliente: idCliente, Nombre: usuario, Documento: documento, Mail: mail, Dirección: direccion, Activo: 'VERDADERO' };
         cache.personas = [...personas, nuevaPersona];
         document.getElementById('searchPersonas').value = '';
         renderAdmin();
@@ -849,7 +847,7 @@ function openConsumoModal(userName, idAsistencia) {
         await apiPost('registrarAbono', {
             idCarga: 'CHG-' + Date.now(),
             tipoMovimiento: 'Consumo',
-            idAsistencia: idAsistencia,
+            idCliente: idAsistencia, // Reutilizamos el id pasado
             servicio: '',
             suplemento: nombre,
             monto: -Math.abs(precio)
@@ -882,12 +880,16 @@ async function saldarActividad(idAsistencia, actividad) {
     }
 
     await withLoader(async () => {
-        // Obtener abonos de esta persona (cache para OWNER, API para PROFESOR)
+        // Obtener abonos de esta persona (cache para OWNER, API para PROFESOR usando DNI)
         let abonosPersona;
         if (currentRole === 'OWNER' && cache.abonos !== null) {
-            abonosPersona = cache.abonos.filter(a => String(a.Persona || '') === idAsistencia);
+            abonosPersona = cache.abonos.filter(a => String(a.Persona || a.IDCliente || '') === idAsistencia);
         } else {
-            abonosPersona = (await apiGet('getAbonosByPersonaId', { idAsistencia: idAsistencia })) || [];
+            const persona = (cache.personas || []).find(p => String(p.IDCliente || p.IDAsistencia || '') === idAsistencia);
+            const dni = persona ? persona.Documento : '';
+            if (!dni) { alert('No se pudo encontrar el DNI de la persona.'); return; }
+            const data = await apiGet('getFullDataByDocumento', { documento: dni });
+            abonosPersona = data ? (data.abonos || []) : [];
         }
 
         // Solo abonos de la actividad principal (filtrar por IDServicios)
@@ -963,9 +965,9 @@ function getFechaAsistencia(row) {
     return key ? row[key] : (row['Fecha'] || row['Fecha ']);
 }
 
-function getSaldoPersona(idAsistencia) {
-    if (!idAsistencia) return 0;
-    const abs = (cache.abonos || []).filter(a => String(a.Persona || '').trim() === String(idAsistencia));
+function getSaldoPersona(pid) {
+    if (!pid) return 0;
+    const abs = (cache.abonos || []).filter(a => String(a.Persona || a.IDCliente || '').trim() === String(pid));
     return abs.reduce((sum, a) => sum + (parseFloat(a.monto) || 0), 0);
 }
 
@@ -976,20 +978,23 @@ function getNombreConcepto(idServ, txtSup) {
     return s ? s.Nombre : idServ;
 }
 
-function getNombrePersona(idAsis) {
-    if (!idAsis) return '-';
-    if (currentUser && String(currentUser.IDAsistencia) === String(idAsis)) {
-        return currentUser.Usuario;
+function getNombrePersona(pid) {
+    if (!pid) return '-';
+    if (currentUser && String(currentUser.IDCliente || currentUser.IDAsistencia) === String(pid)) {
+        return currentUser.Nombre || currentUser.Usuario;
     }
-    const p = (cache.personas || []).find(x => String(x.IDAsistencia) === String(idAsis));
-    return p ? p.Usuario : idAsis;
+    const p = (cache.personas || []).find(x => String(x.IDCliente || x.IDAsistencia) === String(pid));
+    return p ? (p.Nombre || p.Usuario) : pid;
 }
 
 async function verUltimaAsistencia(documento, usuario) {
     if (!documento) { alert('Esta persona no tiene documento registrado.'); return; }
     await withLoader(async () => {
-        const asistencias = await apiGet('getAsistenciasByDocumento', { documento });
-        if (!asistencias || asistencias.length === 0) {
+        // Obtenemos todos los datos de la persona por DNI usando el nuevo endpoint unificado
+        const data = await apiGet('getFullDataByDocumento', { documento });
+        const asistencias = data ? (data.asistencias || []) : [];
+
+        if (asistencias.length === 0) {
             alert(`Asistencia: ${usuario}\n\nSin asistencias registradas.`);
             return;
         }
@@ -1072,11 +1077,11 @@ function norm(str) { return String(str || '').trim().toLowerCase(); }
  * Auto-genera IDAsistencia con formato "Persona0001".
  * Toma el máximo número existente en cache.personas y suma 1.
  */
-function generatePersonaId() {
+function generateId() {
     let max = 0;
     (cache.personas || []).forEach(p => {
-        const m = String(p.IDAsistencia || '').match(/^Persona(\d+)$/i);
+        const m = String(p.IDCliente || p.IDAsistencia || '').match(/(\d+)$/);
         if (m) max = Math.max(max, parseInt(m[1], 10));
     });
-    return `Persona${String(max + 1).padStart(4, '0')}`;
+    return `CLI${String(max + 1).padStart(4, '0')}`;
 }
