@@ -184,30 +184,49 @@ async function handleLoginCliente(e) {
         return;
     }
 
+    // PASO 1: Autenticación Rápida (< 1 segundo)
     await withLoader(async () => {
-        // Petición limpia por GET (No genera CORS)
-        const data = await apiGet('getFullDataByDocumento', { documento: dni });
+        const clienteFound = await apiGet('loginCliente', { documento: dni });
 
-        if (!data || !data.cliente) {
+        if (!clienteFound) {
             alert('DNI no encontrado. Verificá que estés registrado en la pestaña Clientes.');
             return;
         }
 
-        // Cargamos los datos directos del objeto retornado por el backend
-        currentUser = data.cliente;
+        // Acceso inmediato al perfil con el objeto cliente
+        currentUser = clienteFound;
         currentRole = 'CLIENTE';
 
-        cache.abonos = data.abonos || [];
-        cache.asistencias = data.asistencias || [];
-        cache.actividades = data.actividades || [];
-        cache.suplementos = data.suplementos || [];
-        cache.inscripciones = data.inscripciones || [];
-
         setupNavbar();
-        renderProfile();
+        renderProfile(); // Renderiza el perfil inicial (sin datos pesados aún)
         enterApp('perfilView');
+
+        // PASO 2: Carga asíncrona de datos pesados (en segundo plano)
+        fetchBackgroundData(dni);
     });
 }
+
+/**
+ * Carga los datos pesados (abonos, asistencias, etc.) sin bloquear la UI.
+ */
+async function fetchBackgroundData(dni) {
+    try {
+        const data = await apiGet('getFullDataByDocumento', { documento: dni });
+        if (data) {
+            cache.abonos = data.abonos || [];
+            cache.asistencias = data.asistencias || [];
+            cache.actividades = data.actividades || [];
+            cache.suplementos = data.suplementos || [];
+            cache.inscripciones = data.inscripciones || [];
+
+            // Refrescar la vista de perfil para mostrar la nueva data cargada
+            renderProfile();
+        }
+    } catch (e) {
+        console.error("Error cargando datos en segundo plano:", e);
+    }
+}
+
 
 
 
