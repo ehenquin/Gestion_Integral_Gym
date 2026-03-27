@@ -394,11 +394,11 @@ function showOnlyView(viewId) {
 ========================= */
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* Inicializar tema desde localStorage */
-    const _savedTheme = localStorage.getItem('gymTheme') || 'dark';
-    document.documentElement.setAttribute('data-theme', _savedTheme);
-    const _btnT = document.getElementById('btnTheme');
-    if (_btnT) _btnT.textContent = _savedTheme === 'dark' ? '🌙' : '☀️';
+    /* Inicializar tema */
+    const savedTheme = localStorage.getItem('gymTheme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const btnTheme = document.getElementById('btnTheme');
+    if (btnTheme) btnTheme.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
     /* Login choice */
     document.getElementById('btnChoiceAlumno').addEventListener('click', () => showOnlyView('loginClienteView'));
@@ -408,65 +408,67 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('loginClienteForm').addEventListener('submit', handleLoginCliente);
     document.getElementById('loginStaffForm').addEventListener('submit', handleLoginStaff);
 
-
-
-    /* Logout (Reparación Final: Usando método clear) */
+    /* Logout (CORREGIDO) */
     document.getElementById('btnLogout').addEventListener('click', () => {
-        // 1. Limpiar sesión y roles (variables tipo 'let')
+
+        // Limpiar sesión
         currentUser = null;
         currentRole = null;
 
-        // 2. Limpiar cache usando su método interno (sin reasignar la constante 'cache')
-        if (typeof cache.clear === 'function') {
-            cache.clear();
-        } else {
-            // Fallback manual si clear no está disponible
-            cache.abonos = null;
-            cache.asistencias = null;
-            cache.actividades = null;
-            cache.suplementos = null;
-            cache.inscripciones = null;
-            cache.personas = null;
+        // Limpiar cache SIN reasignar
+        if (cache) {
+            cache.abonos = [];
+            cache.asistencias = [];
+            cache.actividades = [];
+            cache.suplementos = [];
+            cache.inscripciones = [];
+            cache.personas = [];
         }
 
-        // 3. Limpiar inputs del formulario
+        // Limpiar inputs
         const dInput = document.getElementById('clienteDniInput');
         const eInput = document.getElementById('staffEmailInput');
         if (dInput) dInput.value = '';
         if (eInput) eInput.value = '';
 
-        // 4. Ocultar header y volver al inicio
+        // Reset UI
         document.getElementById('mainHeader').classList.add('hidden');
+
+        // Volver al inicio SIEMPRE
         enterApp('loginChoiceView');
     });
 
-
-
-
-
-
     /* Navegación */
     document.getElementById('btnPerfil').addEventListener('click', () => {
-        renderProfile(); showView('perfilView');
-    });
-    document.getElementById('btnAbonos').addEventListener('click', () => {
-        if (!canViewAbonos()) return;
-        filterAbonos(); showView('abonosView');
-    });
-    document.getElementById('btnPersonas').addEventListener('click', () => {
-        if (!canViewPersonas()) return;
-        filterPersonas(); showView('personasView');
-    });
-    document.getElementById('btnAsistencia').addEventListener('click', () => {
-        if (!canRegisterAsistencia()) return;
-        resetAsistencia(); showView('asistenciaView');
-    });
-    document.getElementById('btnAdmin').addEventListener('click', () => {
-        if (!canAccessAdmin()) return;
-        renderAdmin(); showView('adminPanelView');
+        renderProfile();
+        showView('perfilView');
     });
 
-    /* Búsqueda y Filtros */
+    document.getElementById('btnAbonos').addEventListener('click', () => {
+        if (!canViewAbonos()) return;
+        filterAbonos();
+        showView('abonosView');
+    });
+
+    document.getElementById('btnPersonas').addEventListener('click', () => {
+        if (!canViewPersonas()) return;
+        filterPersonas();
+        showView('personasView');
+    });
+
+    document.getElementById('btnAsistencia').addEventListener('click', () => {
+        if (!canRegisterAsistencia()) return;
+        resetAsistencia();
+        showView('asistenciaView');
+    });
+
+    document.getElementById('btnAdmin').addEventListener('click', () => {
+        if (!canAccessAdmin()) return;
+        renderAdmin();
+        showView('adminPanelView');
+    });
+
+    /* Búsqueda y filtros */
     document.getElementById('searchPersonas').addEventListener('input', filterPersonas);
     document.getElementById('saldoFilter').addEventListener('change', filterPersonas);
 
@@ -477,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* Asistencia */
     document.getElementById('asistenciaForm').addEventListener('submit', handleRegistrarAsistencia);
 
-    /* Admin acciones */
+    /* Admin */
     document.getElementById('btnNewAbono').addEventListener('click', openPagoModal);
     document.getElementById('btnGenDeudas').addEventListener('click', handleGenerarDeudas);
     document.getElementById('btnAddUser').addEventListener('click', openNuevaPersonaModal);
