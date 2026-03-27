@@ -443,59 +443,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    if (dInput) dInput.value = '';
-    if (eInput) eInput.value = '';
-
-    // 4. Resetear UI y ocultar header
-    document.getElementById('mainHeader').classList.add('hidden');
-
-    // 5. Volver siempre a la pantalla inicial (Home / Selector)
-    enterApp('loginChoiceView');
-});
 
 
+    /* Navegación */
+    document.getElementById('btnPerfil').addEventListener('click', () => {
+        renderProfile(); showView('perfilView');
+    });
+    document.getElementById('btnAbonos').addEventListener('click', () => {
+        if (!canViewAbonos()) return;
+        filterAbonos(); showView('abonosView');
+    });
+    document.getElementById('btnPersonas').addEventListener('click', () => {
+        if (!canViewPersonas()) return;
+        filterPersonas(); showView('personasView');
+    });
+    document.getElementById('btnAsistencia').addEventListener('click', () => {
+        if (!canRegisterAsistencia()) return;
+        resetAsistencia(); showView('asistenciaView');
+    });
+    document.getElementById('btnAdmin').addEventListener('click', () => {
+        if (!canAccessAdmin()) return;
+        renderAdmin(); showView('adminPanelView');
+    });
 
+    /* Búsqueda y Filtros */
+    document.getElementById('searchPersonas').addEventListener('input', filterPersonas);
+    document.getElementById('saldoFilter').addEventListener('change', filterPersonas);
 
+    document.getElementById('searchAbonos').addEventListener('input', filterAbonos);
+    document.getElementById('tipoAbonosFilter').addEventListener('change', filterAbonos);
+    document.getElementById('ordenAbonosFilter').addEventListener('change', filterAbonos);
 
-/* Navegación */
-document.getElementById('btnPerfil').addEventListener('click', () => {
-    renderProfile(); showView('perfilView');
-});
-document.getElementById('btnAbonos').addEventListener('click', () => {
-    if (!canViewAbonos()) return;
-    filterAbonos(); showView('abonosView');
-});
-document.getElementById('btnPersonas').addEventListener('click', () => {
-    if (!canViewPersonas()) return;
-    filterPersonas(); showView('personasView');
-});
-document.getElementById('btnAsistencia').addEventListener('click', () => {
-    if (!canRegisterAsistencia()) return;
-    resetAsistencia(); showView('asistenciaView');
-});
-document.getElementById('btnAdmin').addEventListener('click', () => {
-    if (!canAccessAdmin()) return;
-    renderAdmin(); showView('adminPanelView');
-});
+    /* Asistencia */
+    document.getElementById('asistenciaForm').addEventListener('submit', handleRegistrarAsistencia);
 
-/* Búsqueda y Filtros */
-document.getElementById('searchPersonas').addEventListener('input', filterPersonas);
-document.getElementById('saldoFilter').addEventListener('change', filterPersonas);
+    /* Admin acciones */
+    document.getElementById('btnNewAbono').addEventListener('click', openPagoModal);
+    document.getElementById('btnGenDeudas').addEventListener('click', handleGenerarDeudas);
+    document.getElementById('btnAddUser').addEventListener('click', openNuevaPersonaModal);
 
-document.getElementById('searchAbonos').addEventListener('input', filterAbonos);
-document.getElementById('tipoAbonosFilter').addEventListener('change', filterAbonos);
-document.getElementById('ordenAbonosFilter').addEventListener('change', filterAbonos);
-
-/* Asistencia */
-document.getElementById('asistenciaForm').addEventListener('submit', handleRegistrarAsistencia);
-
-/* Admin acciones */
-document.getElementById('btnNewAbono').addEventListener('click', openPagoModal);
-document.getElementById('btnGenDeudas').addEventListener('click', handleGenerarDeudas);
-document.getElementById('btnAddUser').addEventListener('click', openNuevaPersonaModal);
-
-/* Modal */
-document.getElementById('btnModalClose').addEventListener('click', closeModal);
+    /* Modal */
+    document.getElementById('btnModalClose').addEventListener('click', closeModal);
 });
 
 /* =========================
