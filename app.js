@@ -246,47 +246,91 @@ async function fetchBackgroundData(dni) {
 
 
 /* —— STAFF —— */
+/* —— STAFF (Login Local y Pantalla Asistencia Reparada) —— */
 async function handleLoginStaff(e) {
-    e.preventDefault();
-    const email = document.getElementById('staffEmailInput').value.trim().toLowerCase();
+    if (e) e.preventDefault();
+    const emailInput = document.getElementById('staffEmailInput');
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
     const errorEl = document.getElementById('loginStaffError');
-    clearMsg(errorEl);
+    if (errorEl) errorEl.classList.add('hidden');
 
-    if (email === OWNER_EMAIL.toLowerCase()) currentRole = 'OWNER';
-    else if (PROFESSOR_EMAILS.map(em => em.toLowerCase()).includes(email)) currentRole = 'PROFESOR';
-    else { showError(errorEl, 'Email no autorizado como Staff.'); return; }
+    // 1. LOGIN STAFF LOCAL (frontend)
+    if (email === OWNER_EMAIL.toLowerCase()) {
+        currentRole = 'OWNER';
+    } else if (PROFESSOR_EMAILS.map(em => em.toLowerCase()).includes(email)) {
+        currentRole = 'PROFESOR';
+    } else {
+        if (errorEl) { errorEl.textContent = 'Email no autorizado como Staff.'; errorEl.classList.remove('hidden'); }
+        return;
+    }
+
+    currentUser = { Nombre: email.split('@')[0], Mail: email };
 
     await withLoader(async () => {
-        const tempRole = (email === OWNER_EMAIL.toLowerCase()) ? 'OWNER' : 'PROFESOR';
-        const persona = await apiGet('getPersonaByEmail', { email });
-        const tempUser = persona || { IDAsistencia: '', Usuario: email.split('@')[0], Documento: '', Mail: email, Actividad: tempRole };
+        // Carga de tablas completa para Staff usando nuevos endpoints
+        const [pers, abos, acts, sups] = await Promise.all([
+            apiGet('getClientes'),
+            apiGet('getAbonos'),
+            apiGet('getActividades'),
+            apiGet('getSuplementos')
+        ]);
 
-        //await postLogin(tempUser);
+        cache.personas = Array.isArray(pers) ? pers : [];
+        cache.abonos = Array.isArray(abos) ? abos : [];
+        cache.actividades = Array.isArray(acts) ? acts : [];
+        cache.suplementos = Array.isArray(sups) ? sups : [];
 
-        currentUser = tempUser;
-        currentRole = tempRole;
-
-        if (currentRole === 'PROFESOR') {
-            const [pers, abos, servs, sups] = await Promise.all([
-                apiGet('getPersonas'), apiGet('getAbonos'), apiGet('getServicios'), apiGet('getSuplementos')
-            ]);
-            cache.personas = Array.isArray(pers) ? pers : [];
-            cache.abonos = Array.isArray(abos) ? abos : [];
-            cache.servicios = Array.isArray(servs) ? servs : [];
-            cache.suplementos = Array.isArray(sups) ? sups : [];
-            setupNavbar(); renderPersonas(); enterApp('personasView');
+        setupNavbar();
+        if (currentRole === 'OWNER') {
+            renderAdmin();
+            enterApp('adminPanelView');
         } else {
-            const [pers, abos, servs, sups] = await Promise.all([
-                apiGet('getPersonas'), apiGet('getAbonos'), apiGet('getServicios'), apiGet('getSuplementos')
-            ]);
-            cache.personas = Array.isArray(pers) ? pers : [];
-            cache.abonos = Array.isArray(abos) ? abos : [];
-            cache.servicios = Array.isArray(servs) ? servs : [];
-            cache.suplementos = Array.isArray(sups) ? sups : [];
-            setupNavbar(); renderAdmin(); enterApp('adminPanelView');
+            renderPersonas();
+            enterApp('personasView');
         }
     });
 }
+
+/**
+ * Registra asistencia rápida utilizando loginCliente (validación ligera).
+ */
+async function handleRegistrarAsistencia(e) {
+    if (e) e.preventDefault();
+    if (!canRegisterAsistencia()) return;
+    const dniInput = document.getElementById('asistenciaDni');
+    const dni = dniInput ? dniInput.value.trim() : '';
+    const msgEl = document.getElementById('asistenciaMsg');
+
+    if (msgEl) msgEl.classList.add('hidden');
+    if (!dni) return;
+
+    await withLoader(async () => {
+        // Paso 1: Validar cliente (Rápido)
+        const cliente = await apiGet('loginCliente', { documento: dni });
+        if (!cliente) {
+            showAsistenciaMsg(msgEl, `❌ DNI ${dni} no encontrado en Clientes.`, true);
+            msgEl.classList.remove('hidden');
+            return;
+        }
+
+        // Paso 2: Registrar Asistencia (IDCliente de la nueva estructura)
+        await apiPost('registrarAsistencia', { IDCliente: cliente.IDCliente });
+
+        // Paso 3: Feedback inmediato y verificación de deuda
+        let feedback = `✅ Bienvenido, <strong>${escHtml(cliente.Nombre)}</strong>.`;
+
+        // Calcular deuda (si las tablas de abonos están en caché)
+        const saldo = getSaldoPersona(cliente.IDCliente);
+        if (saldo < 0) {
+            feedback += `<br><span style="color:red; font-weight:bold;">⚠️ Deuda pendiente: ${formatMonto(saldo)}</span>`;
+        }
+
+        showAsistenciaMsg(msgEl, feedback, false);
+        msgEl.classList.remove('hidden');
+        dniInput.value = '';
+    });
+}
+
 
 //async function postLogin(userObj) {
 //    await apiPost('registrarLogin', {
