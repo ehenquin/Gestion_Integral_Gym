@@ -192,7 +192,7 @@ async function handleLoginCliente(e) {
             showError(errorEl, 'DNI no encontrado. Verificá que esté registrado en el gimnasio.');
             return;
         }
-        await postLogin(data.cliente);
+        //await postLogin(data.cliente);
         currentUser = data.cliente;
         currentRole = 'CLIENTE';
         cache.inscripciones = data.inscripciones || [];
