@@ -238,7 +238,7 @@ async function handleLoginStaff(e) {
         const persona = await apiGet('getPersonaByEmail', { email });
         const tempUser = persona || { IDAsistencia: '', Usuario: email.split('@')[0], Documento: '', Mail: email, Actividad: tempRole };
 
-        await postLogin(tempUser);
+        //await postLogin(tempUser);
 
         currentUser = tempUser;
         currentRole = tempRole;
@@ -265,13 +265,14 @@ async function handleLoginStaff(e) {
     });
 }
 
-async function postLogin(userObj) {
-    await apiPost('registrarLogin', {
-        idLog: 'LOG-' + Date.now(),
-        documento: userObj.Documento || '',
-        usuario: userObj.Usuario || userObj.Mail
-    });
-}
+//async function postLogin(userObj) {
+//    await apiPost('registrarLogin', {
+//        idLog: 'LOG-' + Date.now(),
+//        documento: userObj.Documento || '',
+//        usuario: userObj.Usuario || userObj.Mail
+//    });
+//}
+
 
 function enterApp(viewId) {
     document.getElementById('mainHeader').classList.remove('hidden');
