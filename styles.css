@@ -784,22 +784,34 @@ select option {
     box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
 }
 
-/* Input Ultra-Legible */
+/* Input Ultra-Legible (Elemento Dominante) */
 .asistencia-dni-large {
-    font-size: 6rem !important;
-    /* Más grande aún */
+    font-size: 10rem !important;
+    /* Tamaño masivo para jerarquía total */
     text-align: center;
     background: transparent !important;
     border: none !important;
-    border-bottom: 5px solid var(--accent) !important;
+    border-bottom: 8px solid var(--accent) !important;
     border-radius: 0 !important;
-    letter-spacing: 12px;
-    font-weight: 900;
+    letter-spacing: 16px;
+    font-weight: 950;
     color: var(--accent);
     width: 100%;
+    margin-top: 20px;
+    text-shadow: 0 10px 40px rgba(52, 168, 83, 0.2);
 }
 
-/* Bloque de Resultado Inmersivo */
+/* Texto secundario "Aguardando..." */
+.asistencia-card-large .section-desc {
+    font-size: 1.1rem !important;
+    /* Mucho más pequeño */
+    opacity: 0.3 !important;
+    /* Muy sutil */
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* Bloque de Resultado Inmersivo (Secundario al DNI) */
 .asistencia-result-large {
     position: fixed;
     inset: 0;
@@ -809,23 +821,31 @@ select option {
     align-items: center;
     z-index: 9999;
     text-align: center;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(30px) saturate(1.5);
+    padding: 60px;
+    /* Aumento de padding global */
 }
 
 .asistencia-result-large h1 {
-    font-size: 6rem;
+    font-size: 4.5rem;
+    /* Menor que el DNI para jerarquía */
     font-weight: 900;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     text-transform: uppercase;
+    letter-spacing: -1px;
 }
 
 .asistencia-result-large p {
-    font-size: 4rem;
+    font-size: 2.8rem;
+    /* Proporcionalmente menor */
     font-weight: 800;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 20px 60px;
-    border-radius: 100px;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 25px 80px;
+    /* Más padding para el bloque de saldo */
+    border-radius: 120px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
+
 
 /* Animación de entrada */
 @keyframes zoomIn {
