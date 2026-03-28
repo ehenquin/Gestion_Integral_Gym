@@ -778,10 +778,11 @@ select option {
 
 /* Contenedor principal: Ocupa casi todo el ancho para sensación de Terminal */
 .asistencia-card-large {
-    max-width: 1200px !important;
-    width: 95%;
-    margin: 2vh auto;
-    padding: 100px 60px !important;
+    max-width: 900px !important;
+    width: 90%;
+    margin: 4vh auto;
+    padding: 60px 40px !important;
+}
     border-radius: 60px !important;
     background: rgba(15, 17, 26, 0.8);
     backdrop-filter: blur(20px);
@@ -791,11 +792,14 @@ select option {
 
 /* 1. DNI: EL ELEMENTO DOMINANTE ABSOLUTO */
 .asistencia-dni-large {
-    font-size: 15rem !important;
-    /* TAMAÑO EXTREMO */
+    font-size: 6rem !important;
+    max-width: 100%;
+    overflow: hidden;
     height: auto !important;
     line-height: 1;
-    margin: 40px 0 !important;
+    margin: 30px 0 !important;
+    text-align: center;
+}
     font-weight: 900 !important;
     letter-spacing: -5px !important;
     /* Ajuste para que se vea como bloque sólido */
@@ -1021,7 +1025,10 @@ select option {
 }
 
 .error-text {
-    font-size: .87rem;
+    font-size: 1.4rem;
+    text-align: center;
+    padding: 20px;
+}
     padding: 11px 16px;
     background: rgba(234, 67, 53, .1);
     border: 1.5px solid rgba(234, 67, 53, .25);
@@ -1032,7 +1039,10 @@ select option {
 }
 
 .info-text {
-    font-size: .87rem;
+    font-size: 1.4rem;
+    text-align: center;
+    padding: 20px;
+}
     padding: 11px 16px;
     background: rgba(52, 168, 83, .1);
     border: 1.5px solid rgba(52, 168, 83, .25);
