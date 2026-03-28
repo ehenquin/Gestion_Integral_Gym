@@ -774,77 +774,117 @@ select option {
 /* =========================
    ASISTENCIA GIGANTE (UX GYM)
 ========================= */
-/* Pantalla Completa y Centrado */
+/* TERMINAL DE ASISTENCIA: REDISEÑO DE ALTO IMPACTO */
+
+/* Contenedor principal: Ocupa casi todo el ancho para sensación de Terminal */
 .asistencia-card-large {
-    max-width: 1000px !important;
-    margin: 5vh auto;
-    padding: 80px 40px !important;
-    border-radius: 40px !important;
-    background: var(--card);
-    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
+    max-width: 1200px !important;
+    width: 95%;
+    margin: 2vh auto;
+    padding: 100px 60px !important;
+    border-radius: 60px !important;
+    background: rgba(15, 17, 26, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
 }
 
-/* Input Ultra-Legible (Elemento Dominante) */
+/* 1. DNI: EL ELEMENTO DOMINANTE ABSOLUTO */
 .asistencia-dni-large {
-    font-size: 10rem !important;
-    /* Tamaño masivo para jerarquía total */
-    text-align: center;
+    font-size: 15rem !important;
+    /* TAMAÑO EXTREMO */
+    height: auto !important;
+    line-height: 1;
+    margin: 40px 0 !important;
+    font-weight: 900 !important;
+    letter-spacing: -5px !important;
+    /* Ajuste para que se vea como bloque sólido */
+    color: #fff !important;
+    text-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     background: transparent !important;
     border: none !important;
-    border-bottom: 8px solid var(--accent) !important;
-    border-radius: 0 !important;
-    letter-spacing: 16px;
-    font-weight: 950;
-    color: var(--accent);
-    width: 100%;
-    margin-top: 20px;
-    text-shadow: 0 10px 40px rgba(52, 168, 83, 0.2);
+    outline: none !important;
+    text-align: center;
 }
 
-/* Texto secundario "Aguardando..." */
+/* 2. TEXTO SECUNDARIO: CASI INVISIBLE */
 .asistencia-card-large .section-desc {
-    font-size: 1.1rem !important;
-    /* Mucho más pequeño */
-    opacity: 0.3 !important;
-    /* Muy sutil */
-    letter-spacing: 3px;
-    text-transform: uppercase;
+    font-size: 0.9rem !important;
+    opacity: 0.2 !important;
+    letter-spacing: 8px;
+    margin-bottom: 0 !important;
+    font-weight: 300;
 }
 
-/* Bloque de Resultado Inmersivo (Secundario al DNI) */
+/* Subrayado decorativo del DNI (Opcional, pero da peso visual) */
+#asistenciaForm {
+    position: relative;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+}
+
+/* 3. MENSAJE DE RESULTADO: GRAN IMPACTO PERO SECUNDARIO AL DNI (Z-INDEX SUPERIOR) */
 .asistencia-result-large {
     position: fixed;
     inset: 0;
+    z-index: 10000;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
-    text-align: center;
-    backdrop-filter: blur(30px) saturate(1.5);
-    padding: 60px;
-    /* Aumento de padding global */
+    backdrop-filter: blur(50px) brightness(0.3);
+    /* Oscurece el fondo para que el texto brille */
+    animation: terminalIn 0.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
+/* Título del mensaje (Ej: SIN DEUDA) */
 .asistencia-result-large h1 {
-    font-size: 4.5rem;
-    /* Menor que el DNI para jerarquía */
-    font-weight: 900;
-    margin-bottom: 25px;
+    font-size: 7rem;
+    /* Grande, pero menor que el DNI (15rem) */
+    font-weight: 950;
+    letter-spacing: -2px;
+    margin-bottom: 40px;
     text-transform: uppercase;
-    letter-spacing: -1px;
 }
 
+/* Subtítulo del mensaje (Ej: NOMBRE O MONTO) */
 .asistencia-result-large p {
-    font-size: 2.8rem;
-    /* Proporcionalmente menor */
-    font-weight: 800;
-    background: rgba(0, 0, 0, 0.15);
-    padding: 25px 80px;
-    /* Más padding para el bloque de saldo */
-    border-radius: 120px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    font-size: 4rem;
+    font-weight: 700;
+    padding: 30px 100px;
+    border-radius: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
+
+/* COLORES SEGÚN ESTADO (Reforzados) */
+.asistencia-result-large.res-success h1 {
+    color: #00ff88;
+    text-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+}
+
+.asistencia-result-large.res-danger h1 {
+    color: #ff3366;
+    text-shadow: 0 0 40px rgba(255, 51, 102, 0.4);
+}
+
+.asistencia-result-large.res-info h1 {
+    color: #33ccff;
+    text-shadow: 0 0 40px rgba(51, 204, 255, 0.4);
+}
+
+@keyframes terminalIn {
+    from {
+        opacity: 0;
+        transform: scale(1.1);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 
 
 /* Animación de entrada */
