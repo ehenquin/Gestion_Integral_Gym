@@ -27,7 +27,7 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwdD5iMI01C32X1e5SEX3sc-pEwn7WTFvKVhJ0cwW6ULXHOwHZG7oqVXoVl3dNtfNHnyA/exec";
 const API_KEY = "GYM_PRO_2026";
 
-const OWNER_EMAIL = "a@mail.com";
+const OWNER_EMAIL = "encargado@gmail.com";
 const PROFESSOR_EMAILS = [
     "profesor1@gym.com",
     "profesor2@gym.com"
