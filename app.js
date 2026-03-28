@@ -365,15 +365,15 @@ async function handleRegistrarAsistencia(e) {
         msgEl.className = `asistencia-bienvenida ${cls}`;
         msgEl.innerHTML = `
             <div class="bienvenida-content">
-                <p style="font-size: 1.5rem; opacity: 0.6; margin-bottom: 20px;">¡HOLA!</p>
                 <h1>${escHtml(cliente.Nombre.toUpperCase())}</h1>
-                <h2>${statusText}</h2>
-                <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
-                    <p style="font-size: 1.2rem; opacity: 0.8;">${fecha} | ${hora}</p>
+                <h2 class="status-badge">${statusText}</h2>
+                <div class="welcome-footer">
+                    <p>${fecha} | ${hora}</p>
                 </div>
             </div>
         `;
         msgEl.classList.remove('hidden');
+
 
         // Auto limpieza y reinicio (2.5s)
         setTimeout(() => {
