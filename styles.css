@@ -774,21 +774,32 @@ select option {
 /* =========================
    ASISTENCIA GIGANTE (UX GYM)
 ========================= */
+/* Pantalla Completa y Centrado */
 .asistencia-card-large {
-    max-width: 900px !important;
-    margin: 0 auto;
-    padding: 50px 40px !important;
+    max-width: 1000px !important;
+    margin: 5vh auto;
+    padding: 80px 40px !important;
+    border-radius: 40px !important;
+    background: var(--card);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
 }
 
+/* Input Ultra-Legible */
 .asistencia-dni-large {
-    font-size: 3.5rem !important;
+    font-size: 6rem !important;
+    /* Más grande aún */
     text-align: center;
-    height: auto !important;
-    padding: 20px !important;
-    letter-spacing: 4px;
-    font-weight: 800;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 5px solid var(--accent) !important;
+    border-radius: 0 !important;
+    letter-spacing: 12px;
+    font-weight: 900;
+    color: var(--accent);
+    width: 100%;
 }
 
+/* Bloque de Resultado Inmersivo */
 .asistencia-result-large {
     position: fixed;
     inset: 0;
@@ -796,11 +807,43 @@ select option {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
+    z-index: 9999;
     text-align: center;
-    padding: 40px;
-    animation: fadeIn .3s ease;
+    backdrop-filter: blur(20px);
 }
+
+.asistencia-result-large h1 {
+    font-size: 6rem;
+    font-weight: 900;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+.asistencia-result-large p {
+    font-size: 4rem;
+    font-weight: 800;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px 60px;
+    border-radius: 100px;
+}
+
+/* Animación de entrada */
+@keyframes zoomIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.asistencia-result-large {
+    animation: zoomIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28);
+}
+
 
 .asistencia-result-large h1 {
     font-size: 4.5rem;
