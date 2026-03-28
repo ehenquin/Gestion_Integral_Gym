@@ -315,19 +315,20 @@ async function handleRegistrarAsistencia(e) {
         // Paso 2: Registrar Asistencia
         await apiPost('registrarAsistencia', { IDCliente: cliente.IDCliente });
 
-        // Paso 3: Feedback inmediato y verificación de deuda
-        const saldo = getSaldoPersona(cliente.IDCliente);
+        // Paso 3: Feedback inmediato y verificación de saldo total
+        const saldoTotal = getSaldoPersona(cliente.IDCliente);
 
-        let title = `BIENVENIDO, ${cliente.Nombre.split(' ')[0]}`;
-        let sub = "SIN DEUDA";
+        let title = `✔ SIN DEUDA`;
+        let sub = cliente.Nombre.toUpperCase();
         let cls = "res-success";
 
-        if (saldo < 0) {
-            title = `HOLA, ${cliente.Nombre.split(' ')[0]}`;
-            sub = `DEUDA: ${formatMonto(saldo)}`;
+        if (saldoTotal < 0) {
+            title = `⚠️ DEUDA ACTUAL`;
+            sub = formatMonto(saldoTotal);
             cls = "res-danger";
-        } else if (saldo > 0) {
-            sub = `A FAVOR: ${formatMonto(saldo)}`;
+        } else if (saldoTotal > 0) {
+            title = `💰 SALDO A FAVOR`;
+            sub = formatMonto(saldoTotal);
             cls = "res-info";
         }
 
@@ -335,6 +336,7 @@ async function handleRegistrarAsistencia(e) {
         startAsistenciaReset(dniInput, msgEl);
     });
 }
+
 
 /**
  * Muestra el mensaje gigante de asistencia.
