@@ -342,8 +342,10 @@ async function handleRegistrarAsistencia(e) {
 function showAsistenciaMsg(el, title, sub, cls) {
     el.className = `asistencia-result-large ${cls}`;
     el.innerHTML = `
-        <h1>${escHtml(title)}</h1>
-        <p>${escHtml(sub)}</p>
+        <div style="transform: translateY(-20px)">
+            <h1 style="text-shadow: 0 10px 30px rgba(0,0,0,0.2)">${escHtml(title)}</h1>
+            <p>${escHtml(sub)}</p>
+        </div>
     `;
     el.classList.remove('hidden');
 }
@@ -353,11 +355,33 @@ function showAsistenciaMsg(el, title, sub, cls) {
  */
 function startAsistenciaReset(input, msg) {
     input.value = '';
+    // Reducimos a 2 segundos exactos para agilidad
     setTimeout(() => {
-        msg.classList.add('hidden');
-        input.focus();
-    }, 2500);
+        msg.style.opacity = '0'; // Efecto fade out
+        msg.style.transition = 'opacity 0.3s ease';
+
+        setTimeout(() => {
+            msg.classList.add('hidden');
+            msg.style.opacity = '1';
+            input.focus();
+        }, 300);
+    }, 2000);
 }
+
+
+
+// Mejora UX: Si el usuario hace click afuera, el foco vuelve al input automáticamente
+document.addEventListener('click', () => {
+    const input = document.getElementById('asistenciaDni');
+    const view = document.getElementById('asistenciaView');
+    if (view && !view.classList.contains('hidden')) {
+        input.focus();
+    }
+});
+
+
+
+
 
 
 //async function postLogin(userObj) {
