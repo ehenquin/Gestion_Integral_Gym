@@ -832,19 +832,20 @@ select option {
 /* Display del DNI: Grande, Limpio y Proporcional */
 .asistencia-dni-large {
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 8rem !important;
+    font-size: 6.8rem !important;
     font-weight: 700 !important;
     letter-spacing: 4px;
     color: var(--accent) !important;
-    background: rgba(0, 0, 0, 0.2) !important;
-    border: 2px solid rgba(255, 255, 255, 0.05) !important;
-    border-radius: 20px !important;
-    padding: 20px 40px !important;
+    background: rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 24px !important;
+    padding: 15px 30px !important;
     width: 100%;
     text-align: center;
-    box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 
 .asistencia-dni-large:focus {
     border-color: var(--accent) !important;
@@ -852,20 +853,80 @@ select option {
 }
 
 /* MENSAJE DE RESULTADO INMERSIVO (Dashboard Style) */
-.asistencia-result-large {
+.asistencia-bienvenida {
     position: fixed;
     inset: 0;
-    z-index: 99999;
-    background: rgba(10, 11, 20, 0.95);
-    backdrop-filter: blur(20px);
+    z-index: 1000000;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 20px;
-    animation: terminalFadeIn 0.3s ease-out forwards;
+    backdrop-filter: blur(25px) brightness(0.4);
+    animation: zoomFadeIn 250ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+.bienvenida-content {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 80px 120px;
+    border-radius: 56px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 40px 150px rgba(0, 0, 0, 0.8);
+    max-width: 900px;
+    width: 95%;
+}
+
+.asistencia-bienvenida h1 {
+    font-size: 6.5rem;
+    font-weight: 900;
+    margin-bottom: 5px;
+    letter-spacing: -3px;
+    color: #fff;
+    line-height: 1;
+}
+
+.asistencia-bienvenida h2 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.asistencia-bienvenida p {
+    font-size: 1.4rem;
+    font-weight: 500;
+    opacity: 0.6;
+    color: #fff;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.asistencia-bienvenida.res-success h2 {
+    color: #00e676;
+    text-shadow: 0 0 30px rgba(0, 230, 118, 0.3);
+}
+
+.asistencia-bienvenida.res-danger h2 {
+    color: #ff5252;
+    text-shadow: 0 0 30px rgba(255, 82, 82, 0.3);
+}
+
+.asistencia-bienvenida.res-info h2 {
+    color: #448aff;
+    text-shadow: 0 0 30px rgba(68, 138, 255, 0.3);
+}
+
+@keyframes zoomFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
 
 /* Título del Feedback (Ej: ✔ SIN DEUDA) */
 .asistencia-result-large h1 {
