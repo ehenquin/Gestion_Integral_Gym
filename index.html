@@ -235,22 +235,24 @@
             </section>
 
             <section id="asistenciaView" class="view hidden">
-                <div class="view-header" style="justify-content:center;">
-                    <h2 style="font-size:2.5rem; font-weight:800;">Terminal de Asistencia</h2>
+                <div class="view-header" style="justify-content:center; margin-bottom: 50px;">
+                    <h2 style="font-size:3.5rem; font-weight:900; letter-spacing: -1px;">TERMINAL DE ACCESO</h2>
                 </div>
                 <div class="card asistencia-card-large">
-                    <p class="section-desc" style="text-align:center; font-size:1.4rem; margin-bottom:40px;">
-                        Ingresá tu DNI para registrar el ingreso
+                    <div id="asistenciaMsg" class="hidden"></div>
+                    <p class="section-desc"
+                        style="text-align:center; font-size:1.8rem; opacity: 0.6; margin-bottom: 20px;">
+                        AGUARDANDO DNI...
                     </p>
                     <form id="asistenciaForm">
                         <div class="form-group">
-                            <input type="text" id="asistenciaDni" class="asistencia-dni-large" placeholder="DNI"
+                            <input type="text" id="asistenciaDni" class="asistencia-dni-large" placeholder="00000000"
                                 required autofocus inputmode="numeric" autocomplete="off">
                         </div>
                     </form>
-                    <div id="asistenciaMsg" class="hidden"></div>
                 </div>
             </section>
+
 
             <!-- ========== ADMIN ========== -->
             <section id="adminPanelView" class="view hidden">
