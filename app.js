@@ -297,45 +297,100 @@ async function handleLoginStaff(e) {
 async function handleRegistrarAsistencia(e) {
     if (e) e.preventDefault();
     if (!canRegisterAsistencia()) return;
-    const dniInput = document.getElementById('asistenciaDni');
-    const dni = dniInput ? dniInput.value.trim() : '';
-    const msgEl = document.getElementById('asistenciaMsg');
 
-    if (!dni) return;
+    const dniInput = document.getElementById('asistenciaDni');
+    const msgEl = document.getElementById('asistenciaMsg');
+    const descEl = document.querySelector('.asistencia-card-large .section-desc');
+    const dni = dniInput ? dniInput.value.trim() : '';
+
+    if (!dni || dniInput.disabled) return;
+
+    // Bloqueo de input durante el feedback
+    dniInput.disabled = true;
+
+    // Audio Context para sonidos sin librerías
+    const playSound = (freq, type) => {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.3);
+    };
 
     await withLoader(async () => {
-        // Paso 1: Validar cliente (Rápido)
         const cliente = await apiGet('loginCliente', { documento: dni });
+
         if (!cliente) {
-            showAsistenciaMsg(msgEl, `DNI NO ENCONTRADO`, `DNI: ${dni}`, 'res-danger');
-            startAsistenciaReset(dniInput, msgEl);
+            playSound(220, 'square'); // Error
+            msgEl.className = `asistencia-bienvenida res-danger`;
+            msgEl.innerHTML = `
+                <div class="bienvenida-content">
+                    <h1 style="font-size: 4rem;">DNI NO ENCONTRADO</h1>
+                    <h2>VERIFIQUE SUS DATOS</h2>
+                    <p>DNI: ${escHtml(dni)}</p>
+                </div>
+            `;
+            msgEl.classList.remove('hidden');
+            setTimeout(() => {
+                msgEl.classList.add('hidden');
+                dniInput.value = '';
+                dniInput.disabled = false;
+                dniInput.focus();
+            }, 2500);
             return;
         }
 
-        // Paso 2: Registrar Asistencia
         await apiPost('registrarAsistencia', { IDCliente: cliente.IDCliente });
+        playSound(880, 'sine'); // Éxito
 
-        // Paso 3: Feedback inmediato y verificación de saldo total
         const saldoTotal = getSaldoPersona(cliente.IDCliente);
+        const now = new Date();
+        const fecha = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+        const hora = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
-        let title = `✔ SIN DEUDA`;
-        let sub = cliente.Nombre.toUpperCase();
+        let statusText = "DEUDA AL DÍA";
         let cls = "res-success";
 
         if (saldoTotal < 0) {
-            title = `⚠️ DEUDA ACTUAL`;
-            sub = formatMonto(saldoTotal);
+            statusText = `DEUDA: ${formatMonto(saldoTotal)}`;
             cls = "res-danger";
         } else if (saldoTotal > 0) {
-            title = `💰 SALDO A FAVOR`;
-            sub = formatMonto(saldoTotal);
+            statusText = `SALDO A FAVOR: ${formatMonto(saldoTotal)}`;
             cls = "res-info";
         }
 
-        showAsistenciaMsg(msgEl, title, sub, cls);
-        startAsistenciaReset(dniInput, msgEl);
+        msgEl.className = `asistencia-bienvenida ${cls}`;
+        msgEl.innerHTML = `
+            <div class="bienvenida-content">
+                <p style="font-size: 1.5rem; opacity: 0.6; margin-bottom: 20px;">¡HOLA!</p>
+                <h1>${escHtml(cliente.Nombre.toUpperCase())}</h1>
+                <h2>${statusText}</h2>
+                <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
+                    <p style="font-size: 1.2rem; opacity: 0.8;">${fecha} | ${hora}</p>
+                </div>
+            </div>
+        `;
+        msgEl.classList.remove('hidden');
+
+        // Auto limpieza y reinicio (2.5s)
+        setTimeout(() => {
+            msgEl.style.opacity = '0';
+            msgEl.style.transition = 'opacity 0.25s ease';
+            setTimeout(() => {
+                msgEl.classList.add('hidden');
+                msgEl.style.opacity = '1';
+                dniInput.value = '';
+                dniInput.disabled = false;
+                if (descEl) descEl.textContent = "AGUARDANDO DNI...";
+                dniInput.focus();
+            }, 250);
+        }, 2500);
     });
 }
+
 
 
 /**
@@ -730,40 +785,7 @@ function resetAsistencia() {
     el.className = 'hidden'; el.innerHTML = '';
 }
 
-async function handleRegistrarAsistencia(e) {
-    e.preventDefault();
-    if (!canRegisterAsistencia()) return;
-    const dni = document.getElementById('asistenciaDni').value.trim();
-    const msgEl = document.getElementById('asistenciaMsg');
-    clearMsg(msgEl);
-    if (!dni) return;
 
-    await withLoader(async () => {
-        let personas = cache.personas;
-        if (!personas) {
-            personas = (await apiGet('getPersonas')) || [];
-            cache.personas = personas;
-        }
-        const persona = personas.find(p => String(p.Documento || '').trim() === dni);
-        if (!persona) {
-            showAsistenciaMsg(msgEl, `❌ No se encontró ningún alumno con DNI ${escHtml(dni)}.`, true);
-            return;
-        }
-        await apiPost('registrarAsistencia', {
-            idAsistencia: 'ASI-' + Date.now(),
-            documento: persona.Documento,
-            idCliente: persona.IDCliente || persona.IDAsistencia,
-            usuario: persona.Nombre || persona.Usuario
-        });
-        showAsistenciaMsg(msgEl, `✅ Asistencia de <strong>${escHtml(persona.Nombre || persona.Usuario)}</strong> registrada.`, false);
-        document.getElementById('asistenciaDni').value = '';
-    });
-}
-
-function showAsistenciaMsg(el, html, esError) {
-    el.innerHTML = html;
-    el.className = esError ? 'error-text' : 'info-text';
-}
 
 /* =========================
    13. VISTA: ADMIN
@@ -1174,11 +1196,18 @@ function showError(el, msg) { el.textContent = msg; el.classList.remove('hidden'
 function clearMsg(el) { el.textContent = ''; el.className = 'hidden'; }
 
 /** Formatea monto con separador de miles. */
+/** Formatea monto sin decimales y con separador de miles ($45.000 / $-12.000) */
 function formatMonto(n) {
-    if (isNaN(n)) return '$0.00';
-    const abs = Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return (n < 0 ? '-' : '') + '$' + abs;
+    if (isNaN(n)) return '$0';
+    const val = Math.round(n);
+    const abs = Math.abs(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return (val < 0 ? '$-' : '$') + abs;
 }
+
+
+
+
+
 
 /** ISO date → dd/mm/aaaa */
 function formatFecha(valor) {
