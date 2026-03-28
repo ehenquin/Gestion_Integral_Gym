@@ -777,117 +777,174 @@ select option {
 /* TERMINAL DE ASISTENCIA: REDISEÑO DE ALTO IMPACTO */
 
 /* Contenedor principal: Ocupa casi todo el ancho para sensación de Terminal */
+
+
+
+/* ===================================================================
+   ASISTENCIA: REDISEÑO TERMINAL PREMIUM (UX GYM V4)
+   ───────────────────────────────────────────────────────────────────
+   Objetivo: Interfaz tipo quiosco, limpia, profesional y balanceada.
+=================================================================== */
+
+#asistenciaView {
+    background: radial-gradient(circle at center, #1a1c2c 0%, #0a0b14 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Título de la Terminal */
+#asistenciaView .view-header h2 {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    margin-bottom: 30px;
+}
+
+/* Card Central: Contenida y Elegante (Glassmorphism) */
 .asistencia-card-large {
-    max-width: 900px !important;
+    max-width: 850px !important;
     width: 90%;
-    margin: 4vh auto;
+    margin: 0 auto;
     padding: 60px 40px !important;
-}
-    border-radius: 60px !important;
-    background: rgba(15, 17, 26, 0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
-}
-
-/* 1. DNI: EL ELEMENTO DOMINANTE ABSOLUTO */
-.asistencia-dni-large {
-    font-size: 6rem !important;
-    max-width: 100%;
-    overflow: hidden;
-    height: auto !important;
-    line-height: 1;
-    margin: 30px 0 !important;
-    text-align: center;
-}
-    font-weight: 900 !important;
-    letter-spacing: -5px !important;
-    /* Ajuste para que se vea como bloque sólido */
-    color: #fff !important;
-    text-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    text-align: center;
+    border-radius: 30px !important;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* 2. TEXTO SECUNDARIO: CASI INVISIBLE */
+/* "AGUARDANDO DNI" - Secundario y Minimalista */
 .asistencia-card-large .section-desc {
-    font-size: 0.9rem !important;
-    opacity: 0.2 !important;
-    letter-spacing: 8px;
-    margin-bottom: 0 !important;
-    font-weight: 300;
+    font-size: 1rem !important;
+    font-weight: 500;
+    color: #fff !important;
+    opacity: 0.25 !important;
+    letter-spacing: 6px;
+    margin-bottom: 40px !important;
+    text-transform: uppercase;
 }
 
-/* Subrayado decorativo del DNI (Opcional, pero da peso visual) */
-#asistenciaForm {
-    position: relative;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 20px;
+/* Display del DNI: Grande, Limpio y Proporcional */
+.asistencia-dni-large {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 8rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 4px;
+    color: var(--accent) !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: 2px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 20px !important;
+    padding: 20px 40px !important;
+    width: 100%;
+    text-align: center;
+    box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
 }
 
-/* 3. MENSAJE DE RESULTADO: GRAN IMPACTO PERO SECUNDARIO AL DNI (Z-INDEX SUPERIOR) */
+.asistencia-dni-large:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 40px rgba(52, 168, 83, 0.15), inset 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* MENSAJE DE RESULTADO INMERSIVO (Dashboard Style) */
 .asistencia-result-large {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: 99999;
+    background: rgba(10, 11, 20, 0.95);
+    backdrop-filter: blur(20px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(50px) brightness(0.3);
-    /* Oscurece el fondo para que el texto brille */
-    animation: terminalIn 0.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    text-align: center;
+    padding: 20px;
+    animation: terminalFadeIn 0.3s ease-out forwards;
 }
 
-/* Título del mensaje (Ej: SIN DEUDA) */
+/* Título del Feedback (Ej: ✔ SIN DEUDA) */
 .asistencia-result-large h1 {
-    font-size: 7rem;
-    /* Grande, pero menor que el DNI (15rem) */
-    font-weight: 950;
-    letter-spacing: -2px;
-    margin-bottom: 40px;
+    font-size: 5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
     text-transform: uppercase;
 }
 
-/* Subtítulo del mensaje (Ej: NOMBRE O MONTO) */
+/* Subtítulo / Nombre / Monto */
 .asistencia-result-large p {
-    font-size: 4rem;
-    font-weight: 700;
-    padding: 30px 100px;
-    border-radius: 200px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px 50px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* COLORES SEGÚN ESTADO (Reforzados) */
+/* Colores de Estado (Suaves y Profesionales) */
 .asistencia-result-large.res-success h1 {
-    color: #00ff88;
-    text-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+    color: #00d97e;
 }
 
+/* Verde Esmeralda */
 .asistencia-result-large.res-danger h1 {
-    color: #ff3366;
-    text-shadow: 0 0 40px rgba(255, 51, 102, 0.4);
+    color: #ff5252;
 }
 
+/* Rojo Suave */
 .asistencia-result-large.res-info h1 {
-    color: #33ccff;
-    text-shadow: 0 0 40px rgba(51, 204, 255, 0.4);
+    color: #448aff;
 }
 
-@keyframes terminalIn {
+/* Azul Profesional */
+
+/* Animación Terminal */
+@keyframes terminalFadeIn {
     from {
         opacity: 0;
-        transform: scale(1.1);
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
     }
 }
+
+/* Limpieza de clases legacy */
+.res-success,
+.res-danger,
+.res-info {
+    background: transparent !important;
+    color: inherit;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1025,10 +1082,7 @@ select option {
 }
 
 .error-text {
-    font-size: 1.4rem;
-    text-align: center;
-    padding: 20px;
-}
+    font-size: .87rem;
     padding: 11px 16px;
     background: rgba(234, 67, 53, .1);
     border: 1.5px solid rgba(234, 67, 53, .25);
@@ -1039,10 +1093,7 @@ select option {
 }
 
 .info-text {
-    font-size: 1.4rem;
-    text-align: center;
-    padding: 20px;
-}
+    font-size: .87rem;
     padding: 11px 16px;
     background: rgba(52, 168, 83, .1);
     border: 1.5px solid rgba(52, 168, 83, .25);
