@@ -861,10 +861,16 @@ select option {
     justify-content: center;
     align-items: center;
     text-align: center;
-    /* Mayor desenfoque y fondo oscuro profundo en lugar de color sólido */
-    backdrop-filter: blur(45px) brightness(0.25);
-    background: rgba(0, 0, 0, 0.6);
-    animation: zoomFadeIn 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    /* 🔥 CAMBIO CLAVE */
+    backdrop-filter: blur(25px);
+    background: radial-gradient(
+        circle at center,
+        rgba(20, 22, 40, 0.6) 0%,
+        rgba(0, 0, 0, 0.85) 100%
+    );
+
+    animation: zoomFadeIn 300ms ease;
 }
 
 /* Los colores se usan solo como ACENTO, no como fondo de pantalla */
