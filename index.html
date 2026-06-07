@@ -1,322 +1,643 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" data-theme="dark">
+  <head>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://raw.githubusercontent.com/MatiasH2804/Sistema-Para-Gym/main/Gym-Fitness-club-logo-design-on-transparent-background-PNG.png"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GymPRO - Sistema de Gestion</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<head>
-    <link rel="icon" type="image/png"
-        href="https://raw.githubusercontent.com/MatiasH2804/Sistema-Para-Gym/main/Gym-Fitness-club-logo-design-on-transparent-background-PNG.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymPRO — Sistema de Gestión</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-
-<body>
+  <body>
     <div id="app">
+      <!-- ===== LOADER ===== -->
+      <div id="loader" class="loader-overlay hidden">
+        <div class="spinner"></div>
+      </div>
 
-        <!-- ===== LOADER ===== -->
-        <div id="loader" class="loader-overlay hidden">
-            <div class="spinner"></div>
-        </div>
+      <!-- ===== NAVBAR ===== -->
+      <header id="mainHeader" class="hidden">
+        <nav class="navbar">
+          <div class="logo">GYM<span>PRO</span></div>
+          <div class="nav-links">
+            <button type="button" id="btnPerfil" class="nav-item">
+              Perfil
+            </button>
+            <button type="button" id="btnAbonos" class="nav-item hidden">
+              Movimientos
+            </button>
+            <button type="button" id="btnPersonas" class="nav-item hidden">
+              Personas
+            </button>
+            <button type="button" id="btnAsistencia" class="nav-item hidden">
+              Asistencia
+            </button>
+            <button type="button" id="btnCaja" class="nav-item hidden">
+              Caja
+            </button>
+            <button type="button" id="btnAdmin" class="nav-item hidden">
+              Admin
+            </button>
+            <span id="activeUserBadge" class="active-user-badge hidden">
+              <strong id="activeUserRole">ADMIN</strong>
+              <small id="activeUserId">USR001</small>
+            </span>
+            <span id="syncStatus" class="sync-status sync-success"
+              >Sincronizado</span
+            >
 
-        <!-- ===== NAVBAR ===== -->
-        <header id="mainHeader" class="hidden">
-            <nav class="navbar">
-                <div class="logo">GYM<span>PRO</span></div>
-                <div class="nav-links">
-                    <button id="btnPerfil" class="nav-item">Perfil</button>
-                    <button id="btnAbonos" class="nav-item hidden">Abonos</button>
-                    <button id="btnPersonas" class="nav-item hidden">Personas</button>
-                    <button id="btnAsistencia" class="nav-item hidden">Asistencia</button>
-                    <button id="btnAdmin" class="nav-item hidden">Admin</button>
-                    <button id="btnTheme" class="nav-item" title="Cambiar tema" onclick="toggleTheme()">🌙</button>
-                    <button id="btnLogout" class="nav-item logout">Salir</button>
+            <button
+              type="button"
+              id="btnFullscreen"
+              class="nav-item"
+              title="Pantalla completa"
+            >
+              ⛶
+            </button>
+
+            <button
+              type="button"
+              id="btnTheme"
+              class="nav-item"
+              title="Cambiar tema"
+              onclick="toggleTheme()"
+            >
+              🌙
+            </button>
+
+            <button type="button" id="btnLogout" class="nav-item logout">
+              Salir
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      <main class="container">
+        <!-- ========== LOGIN: ELECCION ========== -->
+        <section id="loginChoiceView" class="view">
+          <div class="login-card choice-card">
+            <div class="brand-header">
+              <div class="brand-logo">GYM<span>PRO</span></div>
+              <p class="brand-sub">Sistema de Gestion</p>
+            </div>
+            <div class="choice-buttons">
+              <button type="button" id="btnChoiceAlumno" class="choice-btn">
+                <span class="choice-icon">🏋️</span>
+                <span>
+                  <span class="choice-label">Acceso Alumno</span>
+                  <span class="choice-desc">Ver mi perfil y pagos</span>
+                </span>
+              </button>
+              <button type="button" id="btnChoiceStaff" class="choice-btn">
+                <span class="choice-icon">👤</span>
+                <span>
+                  <span class="choice-label">Acceso Staff</span>
+                  <span class="choice-desc">Profesores y Administración</span>
+                </span>
+              </button>
+              <button
+                type="button"
+                id="btnChoiceAsistenciaPublica"
+                class="choice-btn"
+              >
+                <span class="choice-icon">✅</span>
+                <span>
+                  <span class="choice-label">Registrar Asistencia</span>
+                  <span class="choice-desc">Entrada rápida por DNI</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== LOGIN: CLIENTE ========== -->
+        <section id="loginClienteView" class="view hidden">
+          <div class="login-card">
+            <button class="btn-back" id="btnBackFromCliente">Volver</button>
+            <h1>Acceso Alumno</h1>
+            <p>Ingresa tu DNI para acceder</p>
+
+            <form id="loginClienteForm">
+              <div class="form-group">
+                <label for="clienteDniInput">DNI</label>
+                <input
+                  type="text"
+                  id="clienteDniInput"
+                  placeholder="Ej: 47000111"
+                  required
+                />
+              </div>
+
+              <button type="submit" class="btn-primary">Ingresar</button>
+            </form>
+            <p id="loginClienteError" class="error-text hidden"></p>
+          </div>
+        </section>
+
+        <!-- ========== LOGIN: STAFF ========== -->
+        <section id="loginStaffView" class="view hidden">
+          <div class="login-card">
+            <button class="btn-back" id="btnBackFromStaff">Volver</button>
+            <h1>Acceso Staff</h1>
+            <p>Ingresa tu clave de acceso</p>
+            <form id="loginStaffForm">
+              <div class="form-group">
+                <label for="staffClaveInput">Clave</label>
+                <input
+                  type="password"
+                  id="staffClaveInput"
+                  placeholder="Ingresa tu clave"
+                  required
+                  autocomplete="current-password"
+                />
+              </div>
+              <button type="submit" class="btn-primary">Ingresar</button>
+            </form>
+            <p id="loginStaffError" class="error-text hidden"></p>
+          </div>
+        </section>
+
+        <!-- ========== ASISTENCIA PUBLICA ========== -->
+        <section id="asistenciaPublicaView" class="view hidden">
+          <button
+            type="button"
+            id="btnBackFromAsistenciaPublica"
+            style="
+              position: absolute;
+              top: 20px;
+              left: 20px;
+              z-index: 10;
+              padding: 10px 20px;
+            "
+          >
+            Volver
+          </button>
+          <div class="view-header" style="justify-content: center">
+            <h2 style="font-size: 2rem; font-weight: 700">
+              REGISTRAR ASISTENCIA
+            </h2>
+          </div>
+          <div class="card asistencia-card-large">
+            <div id="asistenciaPublicaMsg" class="hidden"></div>
+            <p
+              class="section-desc"
+              style="
+                text-align: center;
+                font-size: 1.8rem;
+                opacity: 0.6;
+                margin-bottom: 20px;
+              "
+            >
+              AGUARDANDO DNI...
+            </p>
+            <form id="asistenciaPublicaForm">
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="asistenciaPublicaDni"
+                  class="asistencia-dni-large"
+                  placeholder="00000000"
+                  required
+                  autofocus
+                  inputmode="numeric"
+                  autocomplete="off"
+                />
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ========== PERFIL ========== -->
+        <section id="perfilView" class="view hidden">
+          <div class="card profile-card">
+            <div class="profile-header">
+              <div class="avatar" id="userAvatar">U</div>
+              <div class="user-info">
+                <h2 id="userNameDisplay">Usuario</h2>
+                <p id="userMailDisplay">mail@ejemplo.com</p>
+                <span class="badge" id="userRoleBadge">CLIENTE</span>
+              </div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <label>Actividad</label>
+                <p id="userActivityDisplay">-</p>
+              </div>
+              <div class="stat-item" id="saldoStat">
+                <label>Saldo</label>
+                <p id="userBalanceDisplay" class="balance-positive">$0.00</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="asistenciasCard">
+            <h3>Ultimas 5 Asistencias</h3>
+            <div class="table-responsive">
+              <table id="userAsistenciasTable">
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card" id="movimientosCard">
+            <h3>Movimientos Recientes</h3>
+            <div class="table-responsive">
+              <table id="userMovementsTable">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Concepto</th>
+                    <th>Monto</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== MOVIMIENTOS ========== -->
+        <section id="abonosView" class="view hidden">
+          <div class="view-header">
+            <h2>Gestion de Movimientos</h2>
+            <div class="view-actions">
+              <button id="btnExportExcel" class="btn-secondary">
+                Exportar Excel
+              </button>
+              <button id="btnExportCsv" class="btn-secondary">
+                Exportar CSV
+              </button>
+              <button id="btnNewAbono" class="btn-primary-sm hidden">
+                + Registrar Movimiento
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div
+              class="search-bar"
+              style="
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+                align-items: center;
+                flex-wrap: wrap;
+              "
+            >
+              <input
+                type="text"
+                id="searchAbonos"
+                placeholder="Buscar por persona o concepto..."
+                style="flex: 1"
+              />
+
+              <select
+                id="tipoAbonosFilter"
+                class="btn-secondary"
+                style="margin: 0"
+              >
+                <option value="todos">Tipo: Todos</option>
+                <option value="actividad">Tipo: Actividad</option>
+                <option value="suplementos">Tipo: Suplementos</option>
+              </select>
+
+              <select
+                id="clienteAbonosFilter"
+                class="btn-secondary"
+                style="margin: 0"
+              >
+                <option value="">Cliente: Todos</option>
+              </select>
+
+              <!-- NUEVO: FECHAS -->
+              <input type="date" id="fechaDesde" class="btn-secondary" />
+              <input type="date" id="fechaHasta" class="btn-secondary" />
+
+              <select
+                id="ordenAbonosFilter"
+                class="btn-secondary"
+                style="margin: 0"
+              >
+                <option value="recientes">Mas recientes</option>
+                <option value="antiguos">Mas antiguos</option>
+              </select>
+            </div>
+
+            <div class="table-responsive">
+              <table id="abonosTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Persona</th>
+                    <th>Concepto</th>
+                    <th>Monto</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== PERSONAS ========== -->
+        <section id="personasView" class="view hidden">
+          <div class="view-header">
+            <h2>Listado de Personas</h2>
+          </div>
+          <div class="card">
+            <div
+              class="search-bar"
+              style="
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+                align-items: center;
+              "
+            >
+              <input
+                type="text"
+                id="searchPersonas"
+                placeholder="Buscar por nombre o documento..."
+                style="flex: 1"
+              />
+              <select id="saldoFilter" class="btn-secondary" style="margin: 0">
+                <option value="todos">Saldo: Todos</option>
+                <option value="deuda">Saldo: Con Deuda</option>
+                <option value="al_dia">Saldo: Al dia</option>
+                <option value="favor">Saldo: A favor</option>
+              </select>
+            </div>
+            <div class="table-responsive">
+              <table id="personasTable">
+                <thead>
+                  <tr id="personasTableHeaders">
+                    <th>Documento</th>
+                    <th>Nombre</th>
+
+                    <th>Saldos</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="asistenciaView" class="view hidden">
+          <button
+            type="button"
+            onclick="showView('personasView')"
+            style="
+              position: absolute;
+              top: 20px;
+              left: 20px;
+              z-index: 10;
+              padding: 10px 20px;
+            "
+          >
+            Volver
+          </button>
+          <div class="view-header" style="justify-content: center">
+            <h2 style="font-size: 2rem; font-weight: 700">
+              TERMINAL DE ACCESO
+            </h2>
+          </div>
+          <div class="card asistencia-card-large">
+            <div id="asistenciaMsg" class="hidden"></div>
+            <p
+              class="section-desc"
+              style="
+                text-align: center;
+                font-size: 1.8rem;
+                opacity: 0.6;
+                margin-bottom: 20px;
+              "
+            >
+              AGUARDANDO DNI...
+            </p>
+            <form id="asistenciaForm">
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="asistenciaDni"
+                  class="asistencia-dni-large"
+                  placeholder="00000000"
+                  required
+                  autofocus
+                  inputmode="numeric"
+                  autocomplete="off"
+                />
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ========== ADMIN ========== -->
+        <section id="adminPanelView" class="view hidden">
+          <h2 style="margin-bottom: 20px">Panel de Administracion</h2>
+          <div class="admin-grid">
+            <div class="card">
+              <h3>Reportes</h3>
+              <div class="report-stats">
+                <div class="report-item">
+                  <span>Total Clientes</span>
+                  <strong id="totalPersonasCount">0</strong>
                 </div>
-            </nav>
-        </header>
-
-        <main class="container">
-
-            <!-- ========== LOGIN: ELECCIÓN ========== -->
-            <section id="loginChoiceView" class="view">
-                <div class="login-card choice-card">
-                    <div class="brand-header">
-                        <div class="brand-logo">GYM<span>PRO</span></div>
-                        <p class="brand-sub">Sistema de Gestión</p>
-                    </div>
-                    <div class="choice-buttons">
-                        <button id="btnChoiceAlumno" class="choice-btn">
-                            <span class="choice-icon">🏋️</span>
-                            <span>
-                                <span class="choice-label">Acceso Alumno</span>
-                                <span class="choice-desc">Ver mi perfil y pagos</span>
-                            </span>
-                        </button>
-                        <button id="btnChoiceStaff" class="choice-btn">
-                            <span class="choice-icon">👤</span>
-                            <span>
-                                <span class="choice-label">Acceso Staff</span>
-                                <span class="choice-desc">Profesores y Administración</span>
-                            </span>
-                        </button>
-                    </div>
+                <div class="report-item">
+                  <span>Clientes con Deuda</span>
+                  <strong id="totalAbonosCount">0</strong>
                 </div>
-            </section>
-
-            <!-- ========== LOGIN: CLIENTE ========== -->
-            <section id="loginClienteView" class="view hidden">
-                <div class="login-card">
-                    <button class="btn-back" id="btnBackFromCliente">← Volver</button>
-                    <h1>Acceso Alumno</h1>
-                    <p>Ingresá tu DNI para acceder</p>
-
-                    <form id="loginClienteForm">
-
-
-
-
-                        <div class="form-group">
-                            <label for="clienteDniInput">DNI</label>
-                            <input type="text" id="clienteDniInput" placeholder="Ej: 47000111" required>
-                        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-                        <button type="submit" class="btn-primary">Ingresar</button>
-                    </form>
-                    <p id="loginClienteError" class="error-text hidden"></p>
+                <div class="report-item">
+                  <span>Total Adeudado</span>
+                  <strong id="totalRevenueMonth">$0.00</strong>
                 </div>
-            </section>
+                <div class="report-item">
+                  <span>Cobrado Hoy</span>
+                  <strong id="totalCobradoHoy">$0.00</strong>
+                </div>
+                <div class="report-item">
+                  <span>Cobrado Mes</span>
+                  <strong id="totalCobradoMes">$0.00</strong>
+                </div>
+                <div class="report-item">
+                  <span>Consumos Hoy</span>
+                  <strong id="totalConsumosHoy">$0.00</strong>
+                </div>
+                <div class="report-item">
+                  <span>Consumos Mes</span>
+                  <strong id="totalConsumosMes">$0.00</strong>
+                </div>
+                <div class="report-item">
+                  <span>Deuda Neta</span>
+                  <strong id="totalDeudaNeta">$0.00</strong>
+                </div>
+                <div class="report-item">
+                  <span>Clientes Activos</span>
+                  <strong id="totalClientesActivos">0</strong>
+                </div>
+                <div class="report-item">
+                  <span>Ticket Promedio</span>
+                  <strong id="ticketPromedio">$0.00</strong>
+                </div>
+                <div class="report-item">
+                  <span>Ingresos Netos Mes</span>
+                  <strong id="ingresosNetosMes">$0.00</strong>
+                </div>
+                <div class="report-item">
+                  <span>Morosidad</span>
+                  <strong id="morosidad">0%</strong>
+                </div>
+                <div class="report-item">
+                  <span>Deuda Promedio</span>
+                  <strong id="deudaPromedio">$0.00</strong>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Alertas</h3>
+              <div id="adminAlertas" class="admin-list"></div>
+            </div>
+            <div class="card">
+              <h3>Rankings</h3>
+              <div class="rankings-grid">
+                <div>
+                  <h4>Top Actividades</h4>
+                  <ol id="topActividades" class="ranking-list"></ol>
+                </div>
+                <div>
+                  <h4>Top Suplementos</h4>
+                  <ol id="topSuplementos" class="ranking-list"></ol>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Acciones</h3>
+              <div class="action-buttons">
+                <button class="btn-secondary" id="btnGenDeudas">
+                  Generar Deuda Mensual
+                </button>
+                <button class="btn-secondary" id="btnAddUser">
+                  Nueva Persona
+                </button>
+                <button class="btn-secondary" id="btnDemoData">
+                  Generar Datos Demo
+                </button>
+                <button class="btn-secondary" id="btnClearDemoData">
+                  Limpiar Datos Demo
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <!-- ========== LOGIN: STAFF ========== -->
-            <section id="loginStaffView" class="view hidden">
-                <div class="login-card">
-                    <button class="btn-back" id="btnBackFromStaff">← Volver</button>
-                    <h1>Acceso Staff</h1>
-                    <p>Ingresá el email de tu cuenta de staff</p>
-                    <form id="loginStaffForm">
-                        <div class="form-group">
-                            <label for="staffEmailInput">Email</label>
-                            <input type="email" id="staffEmailInput" placeholder="staff@gym.com" required
-                                autocomplete="email">
-                        </div>
-                        <button type="submit" class="btn-primary">Ingresar</button>
-                    </form>
-                    <p id="loginStaffError" class="error-text hidden"></p>
-                </div>
-            </section>
+        <!-- ========== CAJA ========== -->
+        <section id="cajaView" class="view hidden">
+          <div class="view-header">
+            <h2>Caja</h2>
+          </div>
+          <div class="card">
+            <div class="search-bar caja-filtros">
+              <select id="cajaPeriodoFilter" class="btn-secondary">
+                <option value="hoy">Hoy</option>
+                <option value="semana">Semana</option>
+                <option value="mes" selected>Mes</option>
+                <option value="personalizado">Personalizado</option>
+              </select>
+              <input type="date" id="cajaDesde" class="btn-secondary" />
+              <input type="date" id="cajaHasta" class="btn-secondary" />
+            </div>
+          </div>
+          <div class="card">
+            <div class="report-stats caja-stats">
+              <div class="report-item">
+                <span>Ingresos Hoy</span>
+                <strong id="cajaIngresosHoy">$0.00</strong>
+              </div>
+              <div class="report-item">
+                <span>Ingresos Mes</span>
+                <strong id="cajaIngresosMes">$0.00</strong>
+              </div>
+              <div class="report-item">
+                <span>Consumos Hoy</span>
+                <strong id="cajaConsumosHoy">$0.00</strong>
+              </div>
+              <div class="report-item">
+                <span>Consumos Mes</span>
+                <strong id="cajaConsumosMes">$0.00</strong>
+              </div>
+              <div class="report-item">
+                <span>Deuda Total</span>
+                <strong id="cajaDeudaTotal">$0.00</strong>
+              </div>
+              <div class="report-item">
+                <span>Clientes con Deuda</span>
+                <strong id="cajaClientesDeuda">0</strong>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Ultimos movimientos</h3>
+            <div class="table-responsive">
+              <table id="cajaMovimientosTable">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Cliente</th>
+                    <th>Concepto</th>
+                    <th>Monto</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
 
-            <!-- ========== PERFIL ========== -->
-            <section id="perfilView" class="view hidden">
-                <div class="card profile-card">
-                    <div class="profile-header">
-                        <div class="avatar" id="userAvatar">U</div>
-                        <div class="user-info">
-                            <h2 id="userNameDisplay">Usuario</h2>
-                            <p id="userMailDisplay">mail@ejemplo.com</p>
-                            <span class="badge" id="userRoleBadge">CLIENTE</span>
-                        </div>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <label>Actividad</label>
-                            <p id="userActivityDisplay">-</p>
-                        </div>
-                        <div class="stat-item" id="saldoStat">
-                            <label>Saldo</label>
-                            <p id="userBalanceDisplay" class="balance-positive">$0.00</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" id="asistenciasCard">
-                    <h3>Últimas 5 Asistencias</h3>
-                    <div class="table-responsive">
-                        <table id="userAsistenciasTable">
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card" id="movimientosCard">
-                    <h3>Movimientos Recientes</h3>
-                    <div class="table-responsive">
-                        <table id="userMovementsTable">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Concepto</th>
-                                    <th>Monto</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ========== ABONOS ========== -->
-            <section id="abonosView" class="view hidden">
-                <div class="view-header">
-                    <h2>Gestión de Abonos</h2>
-                    <button id="btnNewAbono" class="btn-primary-sm hidden">+ Registrar Pago</button>
-                </div>
-                <div class="card">
-                    <div class="search-bar" style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
-                        <input type="text" id="searchAbonos" placeholder="Buscar por persona o concepto..."
-                            style="flex:1;">
-                        <select id="tipoAbonosFilter" class="btn-secondary" style="margin:0;">
-                            <option value="todos">Tipo: Todos</option>
-                            <option value="actividad">Tipo: Actividad</option>
-                            <option value="suplementos">Tipo: Suplementos</option>
-                        </select>
-                        <select id="ordenAbonosFilter" class="btn-secondary" style="margin:0;">
-                            <option value="recientes">Más recientes</option>
-                            <option value="antiguos">Más antiguos</option>
-                        </select>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="abonosTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Fecha</th>
-                                    <th>Persona</th>
-                                    <th>Concepto</th>
-                                    <th>Monto</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ========== PERSONAS ========== -->
-            <section id="personasView" class="view hidden">
-                <div class="view-header">
-                    <h2>Listado de Personas</h2>
-                </div>
-                <div class="card">
-                    <div class="search-bar" style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
-                        <input type="text" id="searchPersonas" placeholder="Buscar por nombre o documento..."
-                            style="flex:1;">
-                        <select id="saldoFilter" class="btn-secondary" style="margin:0;">
-                            <option value="todos">Saldo: Todos</option>
-                            <option value="deuda">Saldo: Con Deuda</option>
-                            <option value="al_dia">Saldo: Al día</option>
-                            <option value="favor">Saldo: A favor</option>
-                        </select>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="personasTable">
-                            <thead>
-                                <tr>
-                                    <th>Documento</th>
-                                    <th>Nombre</th>
-                                    <th>Actividad</th>
-                                    <th>Saldo</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="asistenciaView" class="view hidden">
-                <div class="view-header" style="justify-content:center; margin-bottom: 50px;">
-                    <h2 style="font-size:3.5rem; font-weight:900; letter-spacing: -1px;">TERMINAL DE ACCESO</h2>
-                </div>
-                <div class="card asistencia-card-large">
-                    <div id="asistenciaMsg" class="hidden"></div>
-                    <p class="section-desc"
-                        style="text-align:center; font-size:1.8rem; opacity: 0.6; margin-bottom: 20px;">
-                        AGUARDANDO DNI...
-                    </p>
-                    <form id="asistenciaForm">
-                        <div class="form-group">
-                            <input type="text" id="asistenciaDni" class="asistencia-dni-large" placeholder="00000000"
-                                required autofocus inputmode="numeric" autocomplete="off">
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-
-            <!-- ========== ADMIN ========== -->
-            <section id="adminPanelView" class="view hidden">
-                <h2 style="margin-bottom:20px">Panel de Administración</h2>
-                <div class="admin-grid">
-                    <div class="card">
-                        <h3>Reportes</h3>
-                        <div class="report-stats">
-                            <div class="report-item">
-                                <span>Total Personas</span>
-                                <strong id="totalPersonasCount">0</strong>
-                            </div>
-                            <div class="report-item">
-                                <span>Total Abonos</span>
-                                <strong id="totalAbonosCount">0</strong>
-                            </div>
-                            <div class="report-item">
-                                <span>Balance Total</span>
-                                <strong id="totalRevenueMonth">$0.00</strong>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3>Acciones</h3>
-                        <div class="action-buttons">
-                            <button class="btn-secondary" id="btnGenDeudas">
-                                📋 Generar Deuda Mensual
-                            </button>
-                            <button class="btn-secondary" id="btnAddUser">
-                                ➕ Nueva Persona
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ========== ACCESO DENEGADO ========== -->
-            <section id="accessDeniedView" class="view hidden">
-                <div class="denied-card">
-                    <div class="denied-icon">🚫</div>
-                    <h2>Acceso Denegado</h2>
-                    <p>No tenés permisos para ver esta sección.</p>
-                    <button class="btn-secondary" onclick="showView('perfilView'); renderProfile();">
-                        Volver al perfil
-                    </button>
-                </div>
-            </section>
-
-        </main>
+        <!-- ========== ACCESO DENEGADO ========== -->
+        <section id="accessDeniedView" class="view hidden">
+          <div class="denied-card">
+            <div class="denied-icon">Acceso</div>
+            <h2>Acceso Denegado</h2>
+            <p>No tenes permisos para ver esta seccion.</p>
+            <button
+              class="btn-secondary"
+              onclick="
+                showView('perfilView');
+                renderProfile();
+              "
+            >
+              Volver al perfil
+            </button>
+          </div>
+        </section>
+      </main>
     </div>
 
     <!-- ===== MODAL ===== -->
     <div id="modalOverlay" class="modal-overlay hidden">
-        <div class="modal">
-            <h3 id="modalTitle">Modal</h3>
-            <div id="modalContent"></div>
-            <div class="modal-actions">
-                <button id="btnModalClose" class="btn-text">Cerrar</button>
-                <button id="btnModalSubmit" class="btn-primary-sm">Guardar</button>
-            </div>
+      <div class="modal">
+        <h3 id="modalTitle">Modal</h3>
+        <div id="modalContent"></div>
+        <div class="modal-actions">
+          <button id="btnModalClose" class="btn-text">Cerrar</button>
+          <button id="btnModalSubmit" class="btn-primary-sm">Guardar</button>
         </div>
+      </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="app.js"></script>
-</body>
-
+  </body>
 </html>
